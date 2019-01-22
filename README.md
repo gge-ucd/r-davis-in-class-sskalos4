@@ -14,4 +14,4 @@ We'd like you to do the following things:
 As always, let us know if you have any questions!
 
 [X]Completed by student
-[]Checked by instructor
+[X]Checked by instructor

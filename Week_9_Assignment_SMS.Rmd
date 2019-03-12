@@ -1,0 +1,71 @@
+---
+title: "Week_9_Assignment_SMS"
+author: "Shannon Skalos"
+date: "3/11/2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+Howdy! My name is Shannon and I study birds. More specifically, I study the habitat selection, reproduction and movement ecology of Northern Harriers (***Circus hudsonius***) in Suisun Marsh. "Wow, that sounds like a lot", you might say. Indeed, it is. But what it really boils down to is **filling knowledge gaps about harrier ecology to better inform their management and conservation** That's pretty much it in a nutshell. 
+
+
+Use the storms data (included in RStudio) to create a plotly graph of the relationship between wind and pressure, where the status of the storm is indicated by a color.
+
+```{r, warning = FALSE, message = FALSE}
+library(viridis)
+library(tidyverse)
+glimpse(storms)
+storms <- storms 
+
+library(plotly)
+
+#ggplotly(ggplot(data = storms)+
+  #geom_jitter(aes(x = as.factor(wind), y = pressure, fill = status), pch = 21, alpha = 0.05)+ 
+  #scale_fill_viridis_c()+ 
+  #theme_bw()+
+  #labs(title = "Hurricane Pressure vs. Wind", subtitle = "by storm status", x = "Wind Speed"))## this code didn't work. Won't allow the discrete character type for status to serve as a continous variable for "fill"
+
+#answer code
+plotly::ggplotly(storms %>%  
+  ggplot()+
+  geom_point(aes(wind, pressure, color = status))
+)
+
+```
+
+
+Create a table that identifies the mean wind, pressure, ts_diameter, hu_diameter of each status of storm (remember to remove NAs!). Use the package htmlTable. Round each mean to only two decimal places (Hint
+look up the function round)
+
+```{r, warning = FALSE, message = FALSE}
+table <- storms %>%
+  drop_na(ts_diameter, hu_diameter) %>% 
+  group_by(status) %>% 
+  summarise(mean_wind = mean(wind), mean_pressure = mean(pressure), mean_ts = mean(ts_diameter), mean_hu = mean(hu_diameter))
+
+table$mean_wind<- round(table$mean_wind, digits = 2)
+table$mean_pressure <- round(table$mean_pressure, digits = 2)
+table$mean_ts <- round(table$mean_ts, digits = 2)
+table$mean_hu <- round(table$mean_hu, digits=2)
+
+htmlTable::htmlTable(table)
+
+```
+
+
+CHALLENGE Find the duration, in number of days, of every hurricane from 2010 and later, and then use one of the map functions from purrr to write a sentence saying “Hurricane X lasted Y days” for each of these storms. You can look for some help with these functions here and here.
+
+```{r, warning = FALSE, message = FALSE}
+duration <- storms %>% 
+  filter(status == "hurricane", year >= 2010) %>% 
+  group_by(name, year) %>% 
+  summarise(num_days = diff(range(day)))
+  
+map2_chr(.x = duration$name, .y = duration$num_days, function(X,Y) paste("Hurricane", X, "lasted", Y, "days"))
+```
+
+
+
+
